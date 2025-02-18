@@ -1,0 +1,55 @@
+# Fichiers compilés
+*.class
+
+# Logs d'exécution
+*.log
+
+# Dossier de build Maven
+target/
+
+# Fichiers générés par Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+release.properties
+buildNumber.properties
+
+# Archives Java
+*.jar
+*.war
+*.ear
+
+# Informations de crash JVM
+hs_err_pid*
+replay_pid*
+
+# Paramètres spécifiques à l'OS
+.DS_Store
+Thumbs.db
+
+# Fichiers IDE (IntelliJ, Eclipse, VSCode)
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+# Fichiers de test et couverture de code
+*.coverage
+*.lcov
+jacoco.exec
+jacoco*.csv
+*.hprof
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Fichiers de cache
+.mvn/
