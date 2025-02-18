@@ -21,6 +21,16 @@ public class ChessBoard {
         }
     }
 
+    public Piece getPieceAt(String position) {
+        int[] coords = positionToCoordinates(position);
+        return board[coords[0]][coords[1]];
+    }
+
+    public void placePiece(Piece piece) {
+        int[] coords = positionToCoordinates(piece.getPosition());
+        board[coords[0]][coords[1]] = piece;
+    }
+
     public void displayBoard() {
         for (int i = 0; i < 8; i++) {
             // System.out.print(i + 1);
@@ -57,7 +67,7 @@ public class ChessBoard {
         }
  
         if (!piece.move(toPosition)) return false;
-        
+
         board[toCoords[0]][toCoords[1]] = piece;
         board[fromCoords[0]][fromCoords[1]] = null;
         return true;
