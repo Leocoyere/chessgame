@@ -1,13 +1,9 @@
 package com.chessonline;
 
-/**
- * Hello world!
- *
- */
-public class App 
-{
-    public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+public class App {
+    public static void main(String[] args) {
+        ChessBoard chessBoard = new ChessBoard();
+        
+        chessBoard.displayBoard();
     }
 }
