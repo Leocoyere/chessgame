@@ -4,7 +4,7 @@ public class Pawn extends Piece {
     private int moveCount;
 
     public Pawn(String color, String position) {
-        super(color, position);
+        super("pawn", color, position);
         this.moveCount = 0;
     }
 
@@ -13,17 +13,6 @@ public class Pawn extends Piece {
 
         if (!isMovementValid(newPosition)) return false;
 
-        setPosition(newPosition);
-        this.moveCount++;
-
-        return true;
-    }
-
-    @Override
-    public boolean capture(String newPosition) {
-
-        if (!isCaptureValid(newPosition)) return false;
-        
         setPosition(newPosition);
         this.moveCount++;
 
@@ -49,7 +38,7 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean isCaptureValid(String newPosition) {
+    public boolean isCaptureMovementValid(String newPosition) {
         int currentRow = position.charAt(1) - '0';
         int newRow = newPosition.charAt(1) - '0';
         char currentCol = position.charAt(0);
