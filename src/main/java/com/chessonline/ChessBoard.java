@@ -5,10 +5,9 @@ public class ChessBoard {
 
     public ChessBoard() {
         board = new Piece[8][8];
-        initializeBoard();
     }
 
-    private void initializeBoard() {
+    public void initializeBoard() {
 
         // white pieces
             // pawns
