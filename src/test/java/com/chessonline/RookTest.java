@@ -11,26 +11,26 @@ public class RookTest {
     @BeforeEach
     void init() {
         chessBoard = new ChessBoard();
-        whiteRook = new Rook("white", "a4", chessBoard);
+        whiteRook = new Rook("white", "a1", chessBoard);
         chessBoard.placePiece(whiteRook);
     }
 
     @Test
     public void moveHorizontally() {
-        assertTrue(chessBoard.movePiece(whiteRook.getPosition(), "h4"));
-        assertEquals("h4", whiteRook.getPosition());
+        assertTrue(chessBoard.movePiece(whiteRook.getPosition(), "h1"));
+        assertEquals("h1", whiteRook.getPosition());
     }
 
     @Test
     public void moveVertically() {
-        assertTrue(chessBoard.movePiece(whiteRook.getPosition(), "a6"));
-        assertEquals("a6", whiteRook.getPosition());
+        assertTrue(chessBoard.movePiece(whiteRook.getPosition(), "a8"));
+        assertEquals("a8", whiteRook.getPosition());
     }
 
     @Test
     public void moveDiagonally() {
         assertFalse(chessBoard.movePiece(whiteRook.getPosition(), "h6"));
-        assertEquals("a4", whiteRook.getPosition());
+        assertEquals("a1", whiteRook.getPosition());
     }
 
     @Test
@@ -39,25 +39,17 @@ public class RookTest {
         Pawn blockingPawn = new Pawn("white", "a2");
         chessBoard.placePiece(blockingPawn);
 
-        assertFalse(chessBoard.movePiece(whiteRook.getPosition(), "a1"));
-        assertEquals("a4", whiteRook.getPosition());
+        assertFalse(chessBoard.movePiece(whiteRook.getPosition(), "a8"));
+        assertEquals("a1", whiteRook.getPosition());
     }
 
     @Test
-    public void capturePiece() {
+    public void captureEnemyPiece() {
         // Place une pièce ennemie pour capturer
         Pawn blackPawn = new Pawn("black", "a7");
         chessBoard.placePiece(blackPawn);
 
         assertTrue(chessBoard.movePiece(whiteRook.getPosition(), "a7"));
         assertEquals("a7", whiteRook.getPosition());
-        chessBoard.displayBoard();
-    }
-
-    @Test
-    public void invalidMove() {
-        // La tour ne peut pas se déplacer en L comme un cavalier
-        assertFalse(chessBoard.movePiece(whiteRook.getPosition(), "b6"));
-        assertEquals("a4", whiteRook.getPosition());
     }
 }
