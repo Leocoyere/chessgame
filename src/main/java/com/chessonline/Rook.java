@@ -64,14 +64,4 @@ public class Rook extends Piece {
     public boolean isCaptureMovementValid(String newPosition) {
         return isMovementValid(newPosition);
     }
-
-    private static class Position {
-        char col;
-        int row;
-
-        Position(String position) {
-            this.col = position.charAt(0);
-            this.row = position.charAt(1) - '0';
-        }
-    }
 }

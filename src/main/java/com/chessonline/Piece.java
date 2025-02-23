@@ -32,5 +32,14 @@ public abstract class Piece {
     public void setPosition(String position) {
         this.position = position;
     }
-    
+
+    protected static class Position {
+        char col;
+        int row;
+
+        Position(String position) {
+            this.col = position.charAt(0);
+            this.row = position.charAt(1) - '0';
+        }
+    }
 }
