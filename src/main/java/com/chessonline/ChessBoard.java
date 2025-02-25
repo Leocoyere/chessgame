@@ -1,10 +1,19 @@
 package com.chessonline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessBoard {
     private Piece[][] board;
+    private List<Piece> whitePieces;
+    private List<Piece> blackPieces;
+    private King whiteKing;
+    private King blackKing;
 
     public ChessBoard() {
         board = new Piece[8][8];
+        whitePieces = new ArrayList<>();
+        blackPieces = new ArrayList<>();
     }
 
     public void initializeBoard() {
@@ -13,21 +22,30 @@ public class ChessBoard {
             // pawns
         for (int i = 0; i < 8; i++) {
             char column = (char) ('a' + i);
-            board[1][i] = new Pawn("black", column + "7");
+            placePiece(new Pawn("black", column + "7"));
         }
             // rooks
-        board[7][0] = new Rook("white", "a1", this);
-        board[7][7] = new Rook("white", "h1", this);
+        placePiece(new Rook("white", "a1", this));
+        placePiece(new Rook("white", "h1", this));
+
+            // king
+        whiteKing = new King("white", "e1");
+        placePiece(whiteKing);
 
         //  black pieces
             // pawns
         for (int i = 0; i < 8; i++) {
             char column = (char) ('a' + i);
-            board[6][i] = new Pawn("white", column + "2");
+            placePiece(new Pawn("white", column + "2"));
         }
             // rooks
-        board[0][0] = new Rook("black", "a8", this);
-        board[0][7] = new Rook("black", "h8", this);
+        placePiece(new Rook("black", "a8", this));
+        placePiece(new Rook("black", "h8", this));
+
+            // king
+        blackKing = new King("black", "e8");
+        placePiece(blackKing);
+
     }
 
     public Piece getPieceAt(String position) {
@@ -38,6 +56,12 @@ public class ChessBoard {
     public void placePiece(Piece piece) {
         int[] coords = positionToCoordinates(piece.getPosition());
         board[coords[0]][coords[1]] = piece;
+
+        if (piece.getColor().equals("white")) {
+            whitePieces.add(piece);
+        } else {
+            blackPieces.add(piece);
+        }
     }
 
     public void displayBoard() {
@@ -79,14 +103,19 @@ public class ChessBoard {
     }
     
     private boolean handleCapture(Piece piece, int[] toCoords, int[] fromCoords, String toPosition) {
-        
-        Piece targetPiece = board[positionToCoordinates(toPosition)[0]][positionToCoordinates(toPosition)[1]];
+
+        Piece targetPiece = board[toCoords[0]][toCoords[1]];
         if (piece.getColor().equals(targetPiece.getColor())) return false;
 
         if (!piece.isCaptureMovementValid(toPosition)) return false;
 
         // Enlever la pièce ennemie
         board[toCoords[0]][toCoords[1]] = null;
+        if (targetPiece.getColor().equals("white")) {
+            whitePieces.remove(targetPiece);
+        } else {
+            blackPieces.remove(targetPiece);
+        }
         
         // Mettre à jour la position de la pièce et l'échiquier
         board[toCoords[0]][toCoords[1]] = piece;
