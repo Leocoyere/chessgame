@@ -1,5 +1,8 @@
 package com.chessonline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class King extends Piece {
 
     public King(String color, String position) {
@@ -24,7 +27,6 @@ public class King extends Piece {
         int rowDiff = Math.abs(target.row - current.row);
         int colDiff = Math.abs(target.col - current.col);
 
-        // Le roi ne peut se déplacer que d'une seule case dans toutes les directions
         if (rowDiff > 1 || colDiff > 1) {
             return false;
         }
@@ -35,5 +37,30 @@ public class King extends Piece {
     @Override
     public boolean isCaptureMovementValid(String newPosition) {
         return isMovementValid(newPosition);
+    }
+
+    public List<String> getPossibleMoves() {
+        List<String> moves = new ArrayList<>();
+        int[][] directions = {
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1},
+            {1, 1}, {-1, -1}, {1, -1}, {-1, 1}
+        };
+
+        Position current = new Position(position);
+        
+        for (int[] dir : directions) {
+            char newCol = (char) (current.col + dir[0]);
+            int newRow = current.row + dir[1];
+
+            if (isWithinBounds(newCol, newRow)) {
+                moves.add("" + newCol + newRow);
+            }
+        }
+
+        return moves;
+    }
+
+    private boolean isWithinBounds(char col, int row) {
+        return col >= 'a' && col <= 'h' && row > 0 && row <= 8;
     }
 }
