@@ -43,6 +43,7 @@ public class Rook extends Piece {
     private boolean isFileClear(Position current, Position target) {
         int step = (target.row > current.row) ? 1 : -1;
         for (int row = current.row + step; row != target.row; row += step) {
+            if(!isWithinBounds((char) target.col, row)) return false;
             if (chessBoard.getPieceAt("" + current.col + row) != null) {
                 return false;
             }
@@ -53,6 +54,7 @@ public class Rook extends Piece {
     private boolean isRankClear(Position current, Position target) {
         int step = (target.col > current.col) ? 1 : -1;
         for (char col = (char) (current.col + step); col != target.col; col += step) {
+            if(!isWithinBounds(col, target.row)) return false;
             if (chessBoard.getPieceAt("" + col + current.row) != null) {
                 return false;
             }
@@ -63,5 +65,9 @@ public class Rook extends Piece {
     @Override
     public boolean isCaptureMovementValid(String newPosition) {
         return isMovementValid(newPosition);
+    }
+
+    private boolean isWithinBounds(char col, int row) {
+        return col >= 'a' && col <= 'h' && row > 0 && row <= 8;
     }
 }
