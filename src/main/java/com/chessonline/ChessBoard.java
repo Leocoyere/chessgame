@@ -3,49 +3,85 @@ package com.chessonline;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.chessonline.Piece.Position;
+
 public class ChessBoard {
     private Piece[][] board;
     private List<Piece> whitePieces;
     private List<Piece> blackPieces;
     private King whiteKing;
     private King blackKing;
+    private MoveHandler moveHandler;
+    private CheckmateHandler checkmateHandler;
 
     public ChessBoard() {
         board = new Piece[8][8];
         whitePieces = new ArrayList<>();
         blackPieces = new ArrayList<>();
+        moveHandler = new MoveHandler(this);
+        checkmateHandler = new CheckmateHandler(this);
+    }
+
+    public Piece[][] getBoard() {
+        return board;
+    }
+
+    public List<Piece> getWhitePieces() {
+        return whitePieces;
+    }
+
+    public List<Piece> getBlackPieces() {
+        return blackPieces;
+    }
+
+    public King getWhiteKing() {
+        return whiteKing;
+    }
+
+    public King getBlackKing() {
+        return blackKing;
     }
 
     public void initializeBoard() {
 
-        // white pieces
-            // pawns
         for (int i = 0; i < 8; i++) {
             char column = (char) ('a' + i);
             placePiece(new Pawn("black", column + "7"));
         }
-            // rooks
         placePiece(new Rook("white", "a1", this));
         placePiece(new Rook("white", "h1", this));
 
-            // king
         whiteKing = new King("white", "e1");
         placePiece(whiteKing);
 
-        //  black pieces
-            // pawns
         for (int i = 0; i < 8; i++) {
             char column = (char) ('a' + i);
             placePiece(new Pawn("white", column + "2"));
         }
-            // rooks
         placePiece(new Rook("black", "a8", this));
         placePiece(new Rook("black", "h8", this));
 
-            // king
         blackKing = new King("black", "e8");
         placePiece(blackKing);
+    }
 
+    public void updateBoard(int[] fromCoords, int[] toCoords, Piece piece) {
+        board[toCoords[0]][toCoords[1]] = piece;
+        board[fromCoords[0]][fromCoords[1]] = null;
+        piece.setPosition("" + (char) ('a' + toCoords[1]) + (8 - toCoords[0]));
+    }
+
+    public void displayBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == null) {
+                    System.out.print("[  ] ");
+                } else {
+                    System.out.print("[" + board[i][j].getColor().substring(0, 1).toUpperCase() + board[i][j].getName().substring(0, 1).toUpperCase() + "] ");
+                }
+            }
+            System.out.println();
+        }
     }
 
     public Piece getPieceAt(String position) {
@@ -57,6 +93,8 @@ public class ChessBoard {
         int[] coords = positionToCoordinates(piece.getPosition());
         board[coords[0]][coords[1]] = piece;
 
+        if(piece.getName().equals("king")) return;
+
         if (piece.getColor().equals("white")) {
             whitePieces.add(piece);
         } else {
@@ -64,84 +102,59 @@ public class ChessBoard {
         }
     }
 
-    public void displayBoard() {
-        for (int i = 0; i < 8; i++) {
-            // System.out.print(i + 1);
-            for (int j = 0; j < 8; j++) {
-                if (board[i][j] == null) {
-                    System.out.print("[  ] ");
-                } else {
-                    // System.out.print("[" + board[i][j].getPosition() + "] ");
-                    System.out.print("[" + board[i][j].getColor().substring(0, 1).toUpperCase() + board[i][j].getName().substring(0, 1).toUpperCase() + "] ");
-                }
-            }
-            System.out.println();
+    public void removePiece(Piece piece) {
+        int[] coords = positionToCoordinates(piece.getPosition());
+        board[coords[0]][coords[1]] = null;
+
+        if (piece.getColor().equals("white")) {
+            whitePieces.remove(piece);
+        } else {
+            blackPieces.remove(piece);
         }
     }
 
     public boolean movePiece(String fromPosition, String toPosition) {
-        int[] fromCoords = positionToCoordinates(fromPosition);
-        int[] toCoords = positionToCoordinates(toPosition);
-    
-        // Vérifier si un pion existe à la position "fromPosition"
-        Piece piece = board[fromCoords[0]][fromCoords[1]];
-        if (piece == null) {
-            System.out.println("Aucun pion à cette position !");
-            return false;
-        }
-    
-        if (isDestinationEmpty(piece, toPosition)) {
-            return handleMove(piece, fromCoords, toCoords, toPosition);
-        }
-        
-        return handleCapture(piece, toCoords, fromCoords, toPosition);
+        return moveHandler.movePiece(fromPosition, toPosition);
     }
     
-    private boolean isDestinationEmpty(Piece piece, String toPosition) {
-        Piece destinationPiece = board[positionToCoordinates(toPosition)[0]][positionToCoordinates(toPosition)[1]];
-        return destinationPiece == null;
+    public boolean isDestinationEmpty(String position) {
+        return getPieceAt(position) == null;
     }
-    
-    private boolean handleCapture(Piece piece, int[] toCoords, int[] fromCoords, String toPosition) {
 
-        Piece targetPiece = board[toCoords[0]][toCoords[1]];
-        if (piece.getColor().equals(targetPiece.getColor())) return false;
-
-        if (!piece.isCaptureMovementValid(toPosition)) return false;
-
-        // Enlever la pièce ennemie
-        board[toCoords[0]][toCoords[1]] = null;
-        if (targetPiece.getColor().equals("white")) {
-            whitePieces.remove(targetPiece);
-        } else {
-            blackPieces.remove(targetPiece);
-        }
-        
-        // Mettre à jour la position de la pièce et l'échiquier
-        board[toCoords[0]][toCoords[1]] = piece;
-        board[fromCoords[0]][fromCoords[1]] = null;
-    
-        piece.setPosition(toPosition);
-        return true;
+    public boolean isDestinationAlly(String position, String color) {
+        Piece piece = getPieceAt(position);
+        return piece != null && piece.getColor().equals(color);
     }
+
+    public boolean isKingInCheck(King king) {
+        return checkmateHandler.isKingInCheck(king);
+    }
+
+    public boolean isCheckmate(King king) {
+        return checkmateHandler.isCheckmate(king);
+    }
+
+    public List<String> getPathBetween(Position from, Position to) {
+        List<String> path = new ArrayList<>();
     
-    private boolean handleMove(Piece piece, int[] fromCoords, int[] toCoords, String toPosition) {
-        // Vérifier si le mouvement est valide
-        if (!piece.move(toPosition)) {
-            return false;
+        int colStep = Integer.compare(to.col, from.col);
+        int rowStep = Integer.compare(to.row, from.row);
+    
+        char col = (char) (from.col + colStep);
+        int row = from.row + rowStep;
+    
+        while (col != to.col || row != to.row) {
+            path.add("" + col + row);
+            col += colStep;
+            row += rowStep;
         }
     
-        // Mettre à jour l'échiquier
-        board[toCoords[0]][toCoords[1]] = piece;
-        board[fromCoords[0]][fromCoords[1]] = null;
-    
-        piece.setPosition(toPosition);
-        return true;
+        return path;
     }
 
-    private int[] positionToCoordinates(String position) {
-        int row = 8 - Integer.parseInt(position.substring(1));  // Conversion de la ligne
-        int col = position.charAt(0) - 'a';  // Conversion de la colonne
+    public int[] positionToCoordinates(String position) {
+        int row = 8 - Integer.parseInt(position.substring(1));
+        int col = position.charAt(0) - 'a';
         return new int[] { row, col };
     }
 }
