@@ -1,7 +1,5 @@
 package com.chessonline;
 
-import java.util.Scanner;
-
 public class MoveHandler {
     private ChessBoard chessBoard;
 
