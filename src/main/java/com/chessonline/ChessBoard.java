@@ -2,6 +2,7 @@ package com.chessonline;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 import com.chessonline.Piece.Position;
 
@@ -115,6 +116,41 @@ public class ChessBoard {
 
     public boolean movePiece(String fromPosition, String toPosition) {
         return moveHandler.movePiece(fromPosition, toPosition);
+    }
+
+    public void promotePawn(Pawn pawn) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Votre pion a atteint l'autre côté ! Choisissez une promotion : (Q)ueen, (R)ook, (B)ishop, (K)night");
+        
+        String choice;
+        Piece newPiece = null;
+        String color = pawn.getColor();
+        String position = pawn.getPosition();
+        
+        do {
+            choice = scanner.nextLine().toUpperCase();
+            switch (choice) {
+                case "Q":
+                    newPiece = new Queen(color, position, this);
+                    break;
+                case "R":
+                    newPiece = new Rook(color, position, this);
+                    break;
+                case "B":
+                    newPiece = new Bishop(color, position, this);
+                    break;
+                case "K":
+                    newPiece = new Knight(color, position);
+                    break;
+                default:
+                    System.out.println("Choix invalide, entrez Q, R, B ou N :");
+            }
+        } while (newPiece == null);
+
+        removePiece(pawn);
+        placePiece(newPiece);
+        System.out.println("Pion promu en " + newPiece.getClass().getSimpleName() + " !");
+        displayBoard();
     }
     
     public boolean isDestinationEmpty(String position) {
