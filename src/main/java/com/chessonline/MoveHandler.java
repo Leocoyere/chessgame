@@ -1,5 +1,7 @@
 package com.chessonline;
 
+import java.util.Scanner;
+
 public class MoveHandler {
     private ChessBoard chessBoard;
 
@@ -28,6 +30,13 @@ public class MoveHandler {
         }
     
         chessBoard.updateBoard(fromCoords, toCoords, piece);
+
+        if (piece instanceof Pawn) {
+            int lastRow = piece.getColor().equals("white") ? 8 : 1;
+            if (toPosition.charAt(1) - '0' == lastRow) {
+                chessBoard.promotePawn((Pawn) piece);
+            }
+        }
 
         chessBoard.isCheckmate(chessBoard.getWhiteKing());
 
