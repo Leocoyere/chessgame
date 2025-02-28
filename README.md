@@ -1,4 +1,4 @@
-# Chess Game (Java & Next.js)
+# Chess Game ♟️ (Java & Next.js)
 
 Un jeu d'échecs développé avec Java pour la logique de jeu et Next.js pour l'interface frontend ( encore en construction ). Le but est de découvrir Java & Next.js.
 
