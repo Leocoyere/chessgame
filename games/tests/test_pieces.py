@@ -1,6 +1,7 @@
 import unittest
 from engine.pieces.pawn import Pawn
 from engine.pieces.king import King
+from engine.pieces.knight import Knight
 
 # unittest.TestCase — no database, no Django. Pure Python logic tests.
 # Each method starting with "test_" is automatically run by the test runner.
@@ -111,3 +112,38 @@ class KingMovementTest(unittest.TestCase):
         edge_king = King("white", "a4")
         moves = edge_king.get_possible_moves()
         self.assertEqual(len(moves), 5)
+
+class KnightMovementTest(unittest.TestCase):
+
+    def setUp(self):
+        self.knight = Knight("white", "d3")
+
+    def test_knight_can_move_two_columns_one_row(self):
+        valid_moves = ["c5", "e5", "c1", "e1"]
+        for move in valid_moves:
+            with self.subTest(move=move):
+                self.assertTrue(self.knight.is_movement_valid(move))
+        
+    def test_knight_can_move_one_column_two_rows(self):
+        valid_moves = ["b4", "f4", "b2", "f2"]
+        for move in valid_moves:
+            with self.subTest(move=move):
+                self.assertTrue(self.knight.is_movement_valid(move))
+
+    def test_knight_cannot_move_straight(self):
+        self.assertFalse(self.knight.is_movement_valid("d4"))
+
+    def test_knight_cannot_move_diagonally(self):
+        self.assertFalse(self.knight.is_movement_valid("c4"))
+
+    def test_move_updates_position(self):
+        self.knight.move("c5")
+        self.assertEqual(self.knight.get_position(), "c5")
+
+    def test_invalid_move_does_not_update_position(self):
+        self.knight.move("c4")
+        self.assertEqual(self.knight.get_position(), "d3")
+
+    def test_capture_movement_is_same_as_regular_movement(self):
+        self.assertTrue(self.knight.is_capture_movement_valid("c5"))
+        self.assertTrue(self.knight.is_capture_movement_valid("e5"))

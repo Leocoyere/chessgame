@@ -1,5 +1,5 @@
 from ..pieces.pawn import Pawn
-
+from ..pieces.piece import Position
 
 class MoveHandler:
     def __init__(self, chess_board):
@@ -12,7 +12,6 @@ class MoveHandler:
         if self.chess_board.is_destination_empty(to_position):
             return self.handle_move(from_coords, to_coords, to_position)
 
-        # checkmate check (same as Java, even if odd placement)
         self.chess_board.is_checkmate(self.chess_board.get_white_king())
 
         return self.handle_capture(to_coords, from_coords, to_position)
@@ -20,9 +19,13 @@ class MoveHandler:
     def handle_move(self, from_coords, to_coords, to_position):
         piece = self.chess_board.get_board()[from_coords[0]][from_coords[1]]
 
-        if not piece.move(to_position):
+        if not piece.is_movement_valid(to_position):
             return False
 
+        if not self._is_path_clear(piece.get_position(), to_position, piece):
+            return False
+
+        piece.move(to_position)
         self.chess_board.update_board(from_coords, to_coords, piece)
 
         # pawn promotion
@@ -45,7 +48,27 @@ class MoveHandler:
         if not piece.is_capture_movement_valid(to_position):
             return False
 
+        # Path to the target must also be clear (excludes the destination itself)
+        if not self._is_path_clear(piece.get_position(), to_position, piece):
+            return False
+
         self.chess_board.remove_piece(target_piece)
         self.chess_board.update_board(from_coords, to_coords, piece)
+
+        return True
+
+    def _is_path_clear(self, from_position, to_position, piece):
+        if piece.get_name() == "knight":
+            return True
+
+        from_pos = Position(from_position)
+        to_pos = Position(to_position)
+
+        # get_path_between returns squares strictly between origin and destination (exclusive)
+        path = self.chess_board.get_path_between(from_pos, to_pos)
+
+        for square in path:
+            if not self.chess_board.is_destination_empty(square):
+                return False
 
         return True
